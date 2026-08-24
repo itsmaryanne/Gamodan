@@ -1,0 +1,145 @@
+nav {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: #222;
+@supports selector(:has(*)) {
+}
+
+.auth-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(8px);
+  z-index: 20;
+}
+
+.auth-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 560px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  color: #fff;
+  padding: 28px;
+  z-index: 21;
+}
+
+.auth-fechar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.auth-cabecalho {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-right: 48px;
+}
+
+.auth-selo {
+  margin: 0;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.auth-cabecalho h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.15rem);
+  line-height: 1.1;
+}
+
+.auth-texto {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.auth-tab {
+  flex: 1 1 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.auth-tab.ativo {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  border-color: transparent;
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.auth-form input {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 23, 42, 0.9);
+  color: #fff;
+  padding: 12px 14px;
+}
+
+.auth-submit {
+  margin-top: 6px;
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, #fb7185, #f97316);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .auth-modal {
+    padding: 22px;
+  }
+
+  .auth-tabs {
+    flex-direction: column;
+  }
+}
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #4caf50;
+}
+
+main {
+  padding: 30px;
+}

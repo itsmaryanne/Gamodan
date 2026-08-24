@@ -1,0 +1,24 @@
+<section class="lista-page">
+	<header class="lista-header">
+		<h1>Minha lista de jogos</h1>
+		<p>{{ jogos().length }} jogo(s) adicionado(s)</p>
+	</header>
+
+	<div class="lista-grid">
+		@for (jogo of jogos(); track jogo.id) {
+			<article class="item-jogo">
+				<img [src]="jogo.imagem" [alt]="jogo.nome" />
+				<div class="item-conteudo">
+					<h3>{{ jogo.nome }}</h3>
+					<p class="status">Status: {{ jogo.status }}</p>
+					<p class="datas">{{ jogo.dataInicial }} — {{ jogo.dataFinal || 'em andamento' }}</p>
+					<p class="favorito" [class.ativo]="jogo.favorito">
+						{{ jogo.favorito ? 'Favorito' : 'Nao favorito' }}
+					</p>
+				</div>
+			</article>
+		} @empty {
+			<p class="vazio">Nenhum jogo adicionado ainda.</p>
+		}
+	</div>
+</section>

@@ -1,0 +1,87 @@
+.perfil {
+  min-height: calc(100vh - 84px);
+  padding: 40px 24px;
+  background: radial-gradient(circle at top, rgba(245, 158, 11, 0.16), transparent 34%),
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  color: #fff;
+}
+
+.perfil-card {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.84);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  display: grid;
+  gap: 18px;
+}
+
+.perfil-selo {
+  margin: 0;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.perfil-card h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.perfil-texto {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.perfil-dados {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.perfil-dados div {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  display: grid;
+  gap: 6px;
+}
+
+.perfil-dados span {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+}
+
+.perfil-dados strong {
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.perfil-botao {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .perfil {
+    padding: 24px 16px;
+  }
+
+  .perfil-card {
+    padding: 24px;
+  }
+
+  .perfil-dados {
+    grid-template-columns: 1fr;
+  }
+}

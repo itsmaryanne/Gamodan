@@ -1,0 +1,23 @@
+<section class="perfil">
+  <div class="perfil-card">
+    <p class="perfil-selo">Perfil</p>
+
+    @if (authService.usuario(); as usuario) {
+      <h1>Bem-vindo, {{ usuario.nome }}</h1>
+      <p class="perfil-texto">Seu acesso está liberado e o menu completo aparece no header.</p>
+
+      <div class="perfil-dados">
+        <div>
+          <span>Nome</span>
+          <strong>{{ usuario.nome }}</strong>
+        </div>
+        <div>
+          <span>E-mail</span>
+          <strong>{{ usuario.email }}</strong>
+        </div>
+      </div>
+
+      <button type="button" class="perfil-botao" (click)="sair()">Sair da conta</button>
+    }
+  </div>
+</section>

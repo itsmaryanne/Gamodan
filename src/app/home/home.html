@@ -1,0 +1,247 @@
+<section class="hero" [style.background]="'linear-gradient(135deg, hsl(' + (250 + scrollPercent()) + ', 70%, 15%), hsl(' + (280 + scrollPercent()) + ', 60%, 25%))'">
+
+  <div class="hero-intro">
+    <h1>Gamodan</h1>
+    <p>Seu catálogo pessoal de jogos: organize o que já jogou, o que está jogando e o que ainda quer jogar, tudo em um só lugar.</p>
+  </div>
+
+  @if (!authService.autenticado()) {
+    <div class="auth-chamada">
+      <div class="auth-chamada-texto">
+        <p class="auth-chamada-selo">Conta Gamodan</p>
+        <h2>Entre ou crie sua conta para salvar sua lista em um espaço só seu.</h2>
+      </div>
+
+      <div class="auth-chamada-acoes">
+        <button type="button" class="btn-auth destaque" (click)="abrirAutenticacao('entrar')">Entrar</button>
+        <button type="button" class="btn-auth" (click)="abrirAutenticacao('criar')">Criar conta</button>
+      </div>
+    </div>
+  }
+
+  <div class="carrossel">
+    <div class="acoes-topo">
+      <button class="btn-adicionar" type="button" (click)="abrirModal()">Adicionar jogos a sua lista</button>
+    </div>
+
+    <div class="carrossel-menu">
+      <button class="filtro-toggle" type="button" (click)="alternarAba()" [attr.aria-pressed]="abaAtiva() === 'favoritos'">
+        <svg class="filtro-icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 5h16l-6 7v5l-4 2v-7L4 5z"></path>
+        </svg>
+        <strong>{{ rotuloFiltro() }}</strong>
+      </button>
+    </div>
+
+    @if (jogosCarrossel().length > 0) {
+      <div class="carrossel-view" aria-label="Carrossel de jogos">
+        <button class="seta" type="button" (click)="voltar()" [disabled]="!temMultiplosJogos()" aria-label="Voltar jogo">❮</button>
+
+        <div class="carrossel-viewport">
+          <div class="carrossel-track" [class.um-item]="carrosselVisivel().length === 1" [class.dois-itens]="carrosselVisivel().length === 2">
+            @for (item of carrosselVisivel(); track item.jogo.id) {
+              <article
+                class="card mini"
+                [class.centralizado]="item.slot === 'center' || item.slot === 'single'"
+                [class.meio-esquerda]="item.slot === 'prev'"
+                [class.meio-direita]="item.slot === 'next'"
+                (click)="abrirDetalhes(item.jogo)">
+                <img [src]="item.jogo.imagem" [alt]="item.jogo.nome" />
+                <h3>{{ item.jogo.nome }}</h3>
+                <div class="estrelas" aria-label="Nota do jogo">
+                  @for (estrela of estrelasDisponiveis; track estrela) {
+                    <span class="estrela" [class.cheia]="estadoEstrela(item.jogo.estrelas, estrela) === 'cheia'" [class.meia]="estadoEstrela(item.jogo.estrelas, estrela) === 'meia'">★</span>
+                  }
+                </div>
+                <p class="datas">{{ formatarDataBrasil(item.jogo.dataInicial) }} — {{ item.jogo.dataFinal ? formatarDataBrasil(item.jogo.dataFinal) : 'em andamento' }}</p>
+              </article>
+            }
+          </div>
+        </div>
+
+        <button class="seta" type="button" (click)="avancar()" [disabled]="!temMultiplosJogos()" aria-label="Próximo jogo">❯</button>
+      </div>
+
+      <div class="indicadores" aria-hidden="true">
+        @for (item of jogosCarrossel(); track item.id; let i = $index) {
+          <button
+            type="button"
+            class="ponto"
+            [class.ativo]="i === indiceAtual()"
+            (click)="irPara(i)"
+            [attr.aria-label]="'Ir para jogo ' + (i + 1)">
+          </button>
+        }
+      </div>
+    } @else {
+      <p class="vazio">Nenhum jogo encontrado nessa categoria.</p>
+    }
+
+    <div class="hero-detalhada">
+      <h2>Como funciona</h2>
+      <p>
+        Crie uma conta gratuita e monte sua própria lista de jogos: cadastre a capa, o status
+        (pendente, jogando ou finalizado), a nota em estrelas e as datas de início e conclusão.
+        Marque os títulos favoritos ou adicione à wishlist para não perdê-los de vista.
+      </p>
+      <p>
+        O carrossel acima mostra seus jogos adicionados recentemente ou, ao alternar o filtro,
+        apenas os favoritos — clique em qualquer card para ver os detalhes completos. Cada conta
+        tem sua lista própria e independente, então seus dados ficam separados de outros logins.
+      </p>
+    </div>
+  </div>
+
+  @if (modalAberto()) {
+    <div class="modal-backdrop" (click)="fecharModal()" aria-hidden="true"></div>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+      <h2 id="titulo-modal">Adicionar jogo</h2>
+
+      <form [formGroup]="formJogo" (ngSubmit)="salvarJogo()" class="formulario">
+        <label>
+          Nome do jogo
+          <input formControlName="nome" type="text" placeholder="Ex.: Hollow Knight" />
+        </label>
+
+        <div class="linha-form linha-status-nota">
+          <label class="campo-cinza">
+            Status
+            <select formControlName="status">
+              <option value="pendente">Pendente</option>
+              <option value="jogando">Jogando</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </label>
+
+          <div class="campo-cinza campo-nota">
+            <span class="avaliacao-titulo">Nota</span>
+            <div class="estrelas estrelas-input" role="radiogroup" [attr.aria-label]="'Avaliação do jogo, ' + legendaEstrela(formJogo.controls.estrelas.value)">
+              @for (estrela of estrelasDisponiveis; track estrela) {
+                <button
+                  type="button"
+                  class="estrela-botao"
+                  [attr.aria-label]="'Definir nota de ' + estrela + ' estrelas'"
+                  (click)="definirEstrelas(estrela, $event)">
+                  <span class="estrela" [class.cheia]="estadoEstrela(formJogo.controls.estrelas.value, estrela) === 'cheia'" [class.meia]="estadoEstrela(formJogo.controls.estrelas.value, estrela) === 'meia'">★</span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <label>
+          URL da capa
+          <input formControlName="imagem" type="url" placeholder="https://..." />
+        </label>
+
+        <div class="linha-form">
+          <label>
+            Data inicial
+            <input formControlName="dataInicial" type="date" />
+          </label>
+
+          <label>
+            Data final
+            <input formControlName="dataFinal" type="date" />
+          </label>
+        </div>
+
+        <div class="marcadores">
+          <label class="checkbox favorito">
+            <span>Marcar como favorito</span>
+            <input formControlName="favorito" type="checkbox" />
+          </label>
+
+          <label class="checkbox wishlist">
+            <span>Wishlist</span>
+            <input formControlName="wishlist" type="checkbox" />
+          </label>
+        </div>
+
+        <div class="acoes-modal">
+          <button type="button" class="btn-secundario" (click)="fecharModal()">Cancelar</button>
+          <button type="submit" class="btn-principal">Salvar jogo</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (detalheAberto() && jogoSelecionado(); as jogo) {
+    <div class="modal-backdrop" (click)="fecharDetalhes()" aria-hidden="true"></div>
+    <section class="modal modal-detalhes" role="dialog" aria-modal="true" aria-labelledby="titulo-detalhes">
+      <h2 id="titulo-detalhes">Detalhes do jogo</h2>
+      <div class="detalhes-grid">
+        <img [src]="jogo.imagem" [alt]="jogo.nome" />
+        <div class="detalhes-info">
+          <p><strong>Nome:</strong> {{ jogo.nome }}</p>
+          <p><strong>Status:</strong> {{ jogo.status }}</p>
+          <p><strong>Nota:</strong> {{ legendaEstrela(jogo.estrelas) }}</p>
+          <p><strong>Data inicial:</strong> {{ formatarDataBrasil(jogo.dataInicial) }}</p>
+          <p><strong>Data final:</strong> {{ jogo.dataFinal ? formatarDataBrasil(jogo.dataFinal) : 'em andamento' }}</p>
+          <p><strong>Favorito:</strong> {{ jogo.favorito ? 'Sim' : 'Nao' }}</p>
+          <p><strong>Wishlist:</strong> {{ jogo.wishlist ? 'Sim' : 'Nao' }}</p>
+        </div>
+      </div>
+      <div class="acoes-modal">
+        <button type="button" class="btn-principal" (click)="fecharDetalhes()">Fechar</button>
+      </div>
+    </section>
+  }
+
+  @if (authService.modalAberto()) {
+    <div class="modal-backdrop" (click)="fecharAutenticacao()" aria-hidden="true"></div>
+    <section class="modal modal-auth" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <button type="button" class="auth-fechar" (click)="fecharAutenticacao()" aria-label="Fechar janela de acesso">×</button>
+
+      <h2 id="auth-title">{{ authService.modo() === 'entrar' ? 'Entrar na sua conta' : 'Criar uma conta' }}</h2>
+      <p class="auth-texto-modal">Use um acesso diferente para cada conta. Seus dados ficam separados por login.</p>
+
+      <div class="auth-tabs" role="tablist" aria-label="Escolha o fluxo de acesso">
+        <button type="button" class="auth-tab" [class.ativo]="authService.modo() === 'entrar'" (click)="trocarAutenticacao('entrar')">Entrar</button>
+        <button type="button" class="auth-tab" [class.ativo]="authService.modo() === 'criar'" (click)="trocarAutenticacao('criar')">Criar conta</button>
+      </div>
+
+      @if (authService.modo() === 'entrar') {
+        <form [formGroup]="loginForm" (ngSubmit)="entrar()" class="formulario auth-form">
+          <label>
+            E-mail
+            <input formControlName="email" type="email" placeholder="voce@exemplo.com" />
+          </label>
+
+          <label>
+            Senha
+            <input formControlName="senha" type="password" placeholder="••••••••" />
+          </label>
+
+          <div class="acoes-modal">
+            <button type="button" class="btn-secundario" (click)="fecharAutenticacao()">Cancelar</button>
+            <button type="submit" class="btn-principal">Entrar</button>
+          </div>
+        </form>
+      } @else {
+        <form [formGroup]="cadastroForm" (ngSubmit)="criarConta()" class="formulario auth-form">
+          <label>
+            Nome
+            <input formControlName="nome" type="text" placeholder="Seu nome" />
+          </label>
+
+          <label>
+            E-mail
+            <input formControlName="email" type="email" placeholder="voce@exemplo.com" />
+          </label>
+
+          <label>
+            Senha
+            <input formControlName="senha" type="password" placeholder="Crie uma senha" />
+          </label>
+
+          <div class="acoes-modal">
+            <button type="button" class="btn-secundario" (click)="fecharAutenticacao()">Cancelar</button>
+            <button type="submit" class="btn-principal">Criar conta</button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+
+</section>

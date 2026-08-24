@@ -1,0 +1,39 @@
+<section class="contato-page">
+  <header class="cabecalho">
+    <p class="selo">Contato da Ilha</p>
+    <h2>Encontre a equipe e fale com cada integrante pelos links abaixo.</h2>
+    <p class="descricao">Pesquise pelo nome para filtrar a lista em tempo real.</p>
+  </header>
+
+  <form class="busca" onsubmit="return false;">
+    <label class="sr-only" for="inputBusca">Pesquisar integrante</label>
+    <input
+      id="inputBusca"
+      type="text"
+      [value]="busca()"
+      (input)="atualizarBusca($any($event.target).value)"
+      placeholder="Pesquisar..."
+      autocomplete="off">
+    <button type="button" aria-label="Pesquisar">Buscar</button>
+  </form>
+
+  <footer class="lista-wrapper">
+    <hr>
+    <div id="lista-membros" class="lista-membros">
+      @if (membrosFiltrados().length > 0) {
+        @for (membro of membrosFiltrados(); track membro.email) {
+          <article class="membro">
+            <p><strong>{{ membro.nome }}</strong></p>
+            <a [href]="emailLink(membro.email)">E-mail</a>
+            <span class="separador">|</span>
+            <a [href]="membro.linkedin" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <span class="separador">|</span>
+            <a [href]="membro.github" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </article>
+        }
+      } @else {
+        <p class="vazio">Nenhuma integrante encontrada.</p>
+      }
+    </div>
+  </footer>
+</section>
